@@ -273,12 +273,6 @@ class Orientation extends GameDatum {
   }
 }
 
-class LivesLeft extends GameDatum {
-  int _livesLeft;
-
-  LivesLeft(int tag, Game game, this._livesLeft) : super(tag, game);
-}
-
 class Circle extends GameDatum {
   double _radius;
 
