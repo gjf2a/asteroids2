@@ -15,7 +15,7 @@ class Game {
   bool _isSetUp = false;
   double _width, _height;
   TagMaker _tagger = TagMaker();
-  double asteroidSpeed = speedIncrement;
+  double _asteroidSpeed = speedIncrement;
 
   int _playerTag;
 
@@ -49,15 +49,22 @@ class Game {
   }
 
   void restart() {
+    _asteroidSpeed = speedIncrement;
     _clearAllTags();
     _setupShip();
     _setupAsteroids();
   }
 
   void setBoundaries(double width, double height) {
-    _width = width;
-    _height = height;
-    if (!_isSetUp) {
+    if (_isSetUp) {
+      double xScale = width / _width;
+      double yScale = height / _height;
+      _width = width;
+      _height = height;
+      _rescaleAll(xScale, yScale);
+    } else {
+      _width = width;
+      _height = height;
       _setupShip();
       _setupAsteroids();
       _isSetUp = true;
@@ -74,9 +81,9 @@ class Game {
   }
 
   void _setupAsteroids() {
-    asteroidSpeed += speedIncrement;
+    _asteroidSpeed += speedIncrement;
     for (int i = 0; i < numAsteroids; i++) {
-      _setupAsteroid(Polar(asteroidSpeed, i * pi/6), (_height + _width)/20);
+      _setupAsteroid(Polar(_asteroidSpeed, i * 2*pi/numAsteroids), (_height + _width)/20);
     }
   }
 
@@ -206,14 +213,18 @@ class Game {
         _circles[dyingAsteroidTag].radius / 2,
         _trackers[dyingAsteroidTag].successor(newTag));
   }
+
+  void _rescaleAll(double xScale, double yScale) {
+    for (Position p in _positions.values) {
+      p.rescale(xScale, yScale);
+    }
+  }
 }
 
 Polar _successorVelocity(Polar velocity, double headingOffset)
   => Polar(velocity.r * 2, velocity.theta + headingOffset);
 
-bool _withinRange(double value, double min, double max) {
-  return value >= min && value <= max;
-}
+bool _withinRange(double value, double min, double max) => value >= min && value <= max;
 
 class TagMaker {
   int _tag = 0;
@@ -243,6 +254,10 @@ class Position extends GameDatum {
 
   void move(Polar movement) {
     _position += movement.toPoint();
+  }
+
+  void rescale(double xScale, double yScale) {
+    _position = Point(xScale * _position.x, yScale * _position.y);
   }
 
   void wrapMove(Polar movement) {
