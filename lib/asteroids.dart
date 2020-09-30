@@ -9,7 +9,7 @@ import 'math2d.dart';
 const double speedIncrement = 0.5;
 const double shipScale = 1/20;
 const double missileSpeed = 10;
-const int numAsteroids = 12;
+const int numAsteroids = 6;
 
 class Game {
   bool _isSetUp = false;
@@ -57,11 +57,9 @@ class Game {
 
   void setBoundaries(double width, double height) {
     if (_isSetUp) {
-      double xScale = width / _width;
-      double yScale = height / _height;
-      _width = width;
-      _height = height;
-      _rescaleAll(xScale, yScale);
+      if (width == _height && height == _width) {
+        _flipAllPositions();
+      }
     } else {
       _width = width;
       _height = height;
@@ -214,9 +212,9 @@ class Game {
         _trackers[dyingAsteroidTag].successor(newTag));
   }
 
-  void _rescaleAll(double xScale, double yScale) {
+  void _flipAllPositions() {
     for (Position p in _positions.values) {
-      p.rescale(xScale, yScale);
+      p.flip();
     }
   }
 }
@@ -256,13 +254,13 @@ class Position extends GameDatum {
     _position += movement.toPoint();
   }
 
-  void rescale(double xScale, double yScale) {
-    _position = Point(xScale * _position.x, yScale * _position.y);
-  }
-
   void wrapMove(Polar movement) {
     Point updated = _position + movement.toPoint();
     _position = Point(_wrap(updated.x, game.width), _wrap(updated.y, game.height));
+  }
+
+  void flip() {
+    _position = Point(_position.y, _position.x);
   }
 }
 
