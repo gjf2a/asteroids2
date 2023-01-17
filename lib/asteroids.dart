@@ -81,7 +81,7 @@ class Game {
   void _setupAsteroids() {
     _asteroidSpeed += speedIncrement;
     for (int i = 0; i < numAsteroids; i++) {
-      _setupAsteroid(Polar(_asteroidSpeed, i * 2*pi/numAsteroids), (_height + _width)/20);
+      _setupAsteroid(Polar(_asteroidSpeed, pi/13 + i * 2*pi/numAsteroids), (_height + _width)/20);
     }
   }
 
